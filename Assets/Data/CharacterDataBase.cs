@@ -9,4 +9,5 @@ public class CharacterDataBase : ScriptableObject
     public int Hp; //最大HP
     public int Atk; //攻撃力
     public float Speed; //移動速度
+    public Color Color; //色
 }

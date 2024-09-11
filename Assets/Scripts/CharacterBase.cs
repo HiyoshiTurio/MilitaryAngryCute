@@ -6,12 +6,19 @@ using UnityEngine.UI;
 
 public class CharacterBase : MonoBehaviour
 {
-    private Image _image;
+    private SpriteRenderer _renderer;
+    public int id;
     private float _moveSpeed;
     private void Awake()
     {
-        _image = GetComponent<Image>();
-        _moveSpeed = InGameDataController.Instance.CharacterData.baseData[0].Speed;
+        
+    }
+
+    private void Start()
+    {
+        _renderer = GetComponent<SpriteRenderer>();
+        _moveSpeed = InGameDataController.Instance.CharacterData.baseData[id].Speed;
+        _renderer.color = InGameDataController.Instance.CharacterData.baseData[id].Color;
     }
 
     private void FixedUpdate()

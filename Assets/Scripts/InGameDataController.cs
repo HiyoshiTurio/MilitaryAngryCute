@@ -23,13 +23,15 @@ public class InGameDataController : MonoBehaviour
 
     private void Start()
     {
-        var a = Addressables.LoadAssetAsync<GameObject>("Assets/Character.prefab");
+        var a = Addressables.LoadAssetAsync<GameObject>("Character");
         characterPrefab = a.WaitForCompletion();
     }
 
     public void SummonCharacter(int id)
     {
-        Instantiate(characterPrefab, characterCamp.transform.position, Quaternion.identity);
+        var character = Instantiate(characterPrefab, characterCamp.transform.position, Quaternion.identity);
+        var characterBase = character.GetComponent<CharacterBase>();
+        characterBase.id = id;
     }
 
     public void TouchedGoal()

@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: characterData
   m_EditorClassIdentifier: 
   baseData:
+  - {fileID: 11400000, guid: ee7edba856e97b449b1d85dfab1ab85c, type: 2}
   - {fileID: 11400000, guid: 48051094de62fba45b5c0e50725ab5d0, type: 2}
+  - {fileID: 11400000, guid: 24edc217c09d77c49a3988491774827b, type: 2}
