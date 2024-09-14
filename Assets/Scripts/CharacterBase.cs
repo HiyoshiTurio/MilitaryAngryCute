@@ -18,7 +18,6 @@ public class CharacterBase : MonoBehaviour
     {
         _renderer = GetComponent<SpriteRenderer>();
         _moveSpeed = InGameDataController.Instance.CharacterData.baseData[id].Speed;
-        _renderer.color = InGameDataController.Instance.CharacterData.baseData[id].Color;
     }
 
     private void FixedUpdate()

@@ -11,14 +11,13 @@ public class TestNetScript : MonoBehaviour
 {
     [SerializeField] private Text text;
     private string _apiurl = "https://script.google.com/macros/s/AKfycbxZew23SsSE6kssATeK2Ce9HAZWzz9dYDJeRhWrMjPDUokGEhLd7J4DJJK0oIVcGOOx/exec";
-
+    // https://docs.google.com/spreadsheets/d/1U3KEg9mNL_jV2zVUPCAJ-I6LR42jMWu2OnHz03v4lWU/edit?gid=0#gid=0
+    ResponseData responseData;
     public void GetDataCore()
     {
         // HTTP リクエストを非同期処理を待つためコルーチンとして呼び出す
         StartCoroutine("GetData");
     }
-    
-
     IEnumerator GetData()
     {
         // HTTP リクエストする(GET メソッド) UnityWebRequest を呼び出し
@@ -38,16 +37,13 @@ public class TestNetScript : MonoBehaviour
             case UnityWebRequest.Result.Success:
                 Debug.Log("リクエスト成功");
                 
-                Debug.Log($"{request.downloadHandler.text}");
                 string tmp = request.downloadHandler.text;
                 string str = "{\"response\":" + tmp + "}";
 
-                Debug.Log(str);
                 // ResponseData クラスで Unity で扱えるデータ化
-                ResponseData response = JsonUtility.FromJson<ResponseData>(str);
-                //[{"Name":"Bird","Cost":1},{"Name":"Pigeon","Cost":3}]
-                text.text = string.Join(" ", response);
-                Debug.Log(response.response[0]);
+                responseData = JsonUtility.FromJson<ResponseData>(str);
+                text.text = string.Join(" ", responseData.response[0].Name, responseData.response[0].Cost);
+                text.text += string.Join(" ", responseData.response[1].Name, responseData.response[1].Cost);
 
                 break;
         }
