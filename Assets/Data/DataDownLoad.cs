@@ -2,11 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 
 public class DataDownLoad : MonoBehaviour
 {
@@ -14,7 +14,35 @@ public class DataDownLoad : MonoBehaviour
         "https://script.google.com/macros/s/AKfycbxiigdL73WaYZvZVSA1SgEk54CqI2zvFk4c1xIC5YA1NlN5GLJ_mqO_otWPPBPfLUEp/exec";
 
     private static CharacterData _characterData = new CharacterData();
+    private static TmpCharacterData tmpcharacterData = new TmpCharacterData();
 
+    [MenuItem("MyTool/Download Data")]
+    static async void DLData()
+    {
+        await GetData();
+        _characterData = ConvertTmpCharacterData(tmpcharacterData);
+    }
+    
+    public static CharacterData ConvertTmpCharacterData(TmpCharacterData tmpCharacterData)//jsonデータをEnumにうまく変換できなかったので、一度文字型にしてからEnum型にする。
+    {
+        Debug.Log("start");
+        CharacterData characterData = new CharacterData();
+        characterData.baseData = new List<CharacterDataBase>();
+        foreach (var VARIABLE in tmpCharacterData.baseData)
+        {
+            CharacterDataBase tmpbase = new CharacterDataBase();
+            tmpbase.CharacterName = VARIABLE.CharacterName;
+            tmpbase.CharacterID = VARIABLE.CharacterID;
+            tmpbase.Hp = VARIABLE.Hp;
+            tmpbase.Atk = VARIABLE.Atk;
+            tmpbase.Cost = VARIABLE.Cost;
+            tmpbase.Speed = VARIABLE.Speed;
+            tmpbase.Type = (CharacterType)Enum.Parse(typeof(CharacterType), VARIABLE.CharacterType);
+            characterData.baseData.Add(tmpbase);
+        }
+        return characterData;
+    }
+    
     [MenuItem("MyTool/DebugConsole")]
     private static void DebugData()
     {
@@ -24,8 +52,8 @@ public class DataDownLoad : MonoBehaviour
                 item.Speed) + "\n");
         }
     }
-#if UNITY_EDITOR
     [MenuItem("MyTool/Download Data")]
+    #if UNITY_EDITOR
     private static async UniTask GetData() //オンライン上のGoogleスプレッドシートからデータを取得
     {
         // HTTP リクエストする(GET メソッド) UnityWebRequest を呼び出し
@@ -48,14 +76,51 @@ public class DataDownLoad : MonoBehaviour
 
                 string tmp = request.downloadHandler.text;
                 string str = "{\"baseData\":" + tmp + "}";
-                Debug.Log(str);
-                Debug.Log(JsonUtility.FromJson<CharacterData>(str).baseData[2].Type);
 
                 // ResponseData クラスで Unity で扱えるデータ化
-                _characterData = JsonUtility.FromJson<CharacterData>(str);
+                tmpcharacterData = JsonUtility.FromJson<TmpCharacterData>(str);
 
                 break;
         }
     }
 #endif
+}
+[Serializable]
+public class CharacterData
+{
+    public List<CharacterDataBase> baseData;
+}
+[Serializable]
+public class CharacterDataBase
+{
+    public int CharacterID; //キャラクターのID
+    public string CharacterName; //キャラクターの名前
+    public CharacterType Type; //キャラクターの種類
+    public int Cost; //召喚するのに必要なコイン
+    public int Hp; //最大HP
+    public int Atk; //攻撃力
+    public float Speed; //移動速度
+}
+
+[Serializable]
+public class TmpCharacterData
+{
+    public List<TmpCharacterDataBase> baseData;
+}
+[Serializable]
+public class TmpCharacterDataBase
+{
+    public int CharacterID; //キャラクターのID
+    public string CharacterName; //キャラクターの名前
+    public string CharacterType; //キャラクターの種類
+    public int Cost; //召喚するのに必要なコイン
+    public int Hp; //最大HP
+    public int Atk; //攻撃力
+    public float Speed; //移動速度
+}
+[Serializable]
+public enum CharacterType
+{
+    Army,
+    Airforce,
 }
